@@ -79,9 +79,10 @@
 
   /* ===== TAB ===== */
   .tabs{background:#fff;border:1px solid var(--line);border-radius:6px;margin-bottom:10px;}
-  .tabs-main{display:flex;flex-wrap:wrap;gap:0 8px;padding:0 16px;border-bottom:1px solid var(--line2);}
-  .tab-m{height:42px;display:flex;align-items:center;padding:0 12px;font-size:13.5px;color:var(--text2);
-    cursor:pointer;position:relative;user-select:none;white-space:nowrap;}
+  .tabs-main{display:grid;grid-template-columns:repeat(3,1fr);column-gap:8px;padding:0 12px;
+    border-bottom:1px solid var(--line2);}
+  .tab-m{height:42px;display:flex;align-items:center;justify-content:center;padding:0 8px;font-size:13px;
+    color:var(--text2);cursor:pointer;position:relative;user-select:none;white-space:nowrap;min-width:0;}
   .tab-m:hover{color:var(--brand);}
   .tab-m.on{color:var(--brand);font-weight:600;}
   .tab-m.on::after{content:'';position:absolute;left:8px;right:8px;bottom:-1px;height:2px;
@@ -380,7 +381,7 @@ const LAND_MODULES = [
   {id:'market', name:'正式上市', fields:['感官指标','理化指标','客服电话'], editable:true}
 ];
 
-/* 千发模板（消费者A / 消费者B / 稽核 共用结构） */
+/* 千发模板（消费者含订单客商 / 消费者不含订单客商 / 稽核 共用结构） */
 const QF_MODULES = [
   {id:'banner', name:'首图', fields:[]},
   {id:'goods',  name:'商品信息', fields:['监制主体','赋码主体','生产主体','产品名称','产品品类','产品等级','产地','上市日期','订单客商','销售日期']},
@@ -389,14 +390,16 @@ const QF_MODULES = [
   {id:'market', name:'正式上市', fields:['感官指标','理化指标','客服电话'], editable:true}
 ];
 
-/* 模板分类：陆基（消费者 / 稽核）、千发（消费者A / 消费者B / 稽核） */
+/* 模板分类：陆基 / 千发 各 3 套（消费者含订单客商 / 消费者不含订单客商 / 稽核） */
 const TABS = [
-  {id:'land-consumer', name:'陆基·消费者'},
-  {id:'land-audit',    name:'陆基·稽核'},
-  {id:'qf-a',          name:'千发·消费者'},
-  {id:'qf-audit',      name:'千发·稽核'}
+  {id:'land-consumer-cust', name:'陆基·消费者（含订单客商）'},
+  {id:'land-consumer',      name:'陆基·消费者（不含订单客商）'},
+  {id:'land-audit',         name:'陆基·稽核'},
+  {id:'qf-consumer-cust',   name:'千发·消费者（含订单客商）'},
+  {id:'qf-consumer',        name:'千发·消费者（不含订单客商）'},
+  {id:'qf-audit',           name:'千发·稽核'}
 ];
-const cur = {t:'land-consumer'};
+const cur = {t:'land-consumer-cust'};
 const collapsedSet = {};   // 默认全部展开，仅记录被手动折叠的模块
 
 /* 正式上市文案（两套模板的指标一致，客服电话不同） */
@@ -425,7 +428,14 @@ const CERT_TAG = {'检测报告':'捕捞时上传'};
 
 function tpl(){ return cur.t.indexOf('qf') === 0 ? 'qf' : 'land'; }
 
-function mods(){ return tpl() === 'qf' ? QF_MODULES : LAND_MODULES; }
+/* 消费者模板分「含订单客商 / 不含订单客商」两套：不含的那套直接从商品信息里去掉该字段，其余完全一致 */
+function mods(){
+  const base = tpl() === 'qf' ? QF_MODULES : LAND_MODULES;
+  if(cur.t.indexOf('audit') > -1 || cur.t.indexOf('cust') > -1) return base;
+  return base.map(m => (m.id === 'goods' && m.fields)
+    ? Object.assign({}, m, {fields: m.fields.filter(f => f !== '订单客商')})
+    : m);
+}
 
 /* 模块的可配置项：普通模块取 fields，分组模块（基地概况）按「组名·项名」展开 */
 function fieldsOf(m){
