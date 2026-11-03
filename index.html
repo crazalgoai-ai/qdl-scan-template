@@ -143,6 +143,12 @@
     background:#f1f4f8;border-radius:3px;padding:2px 8px;}
   .rep-row .lnk:hover{text-decoration:underline;}
 
+  /* 基地概况：分组 */
+  .grp + .grp{margin-top:4px;padding-top:8px;border-top:1px dashed #eef2f7;}
+  .grp-hd{display:flex;align-items:center;gap:8px;height:26px;font-size:12px;font-weight:600;color:var(--text2);}
+  .grp-hd .src2{font-style:normal;font-weight:400;font-size:11px;color:var(--text3);
+    background:#f1f4f8;border-radius:3px;padding:1px 6px;}
+
   /* 养殖过程：可拖动排序的字段列表 */
   .fld-list{padding:2px 0;}
   .fld-row{display:flex;align-items:center;gap:10px;height:32px;padding:0 3px;border-radius:4px;}
@@ -155,6 +161,48 @@
   .fld-row .fn{flex:1;min-width:0;font-size:12.5px;color:var(--text2);overflow:hidden;
     text-overflow:ellipsis;white-space:nowrap;}
   .fld-row .switch{flex:0 0 34px;}
+
+  /* 养殖过程：环节内的配置项（图片/文案），受该环节开关控制 */
+  .cfg-row{display:flex;align-items:center;gap:10px;height:34px;padding-left:82px;}
+  .cfg-row.off{opacity:.42;pointer-events:none;}
+  .cfg-row .cfg-lb{flex:0 0 52px;font-size:12.5px;color:var(--text3);}
+  .cfg-row .cfg-ctl{flex:1;min-width:0;display:flex;align-items:center;gap:8px;}
+  .cfg-row .input{flex:0 0 300px;height:30px;}
+  .cfg-row .filechip{font-size:11.5px;color:var(--text3);background:#f6f8fb;border-radius:3px;
+    padding:2px 8px;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .cfg-row .filechip.none{color:#b9c4d2;background:#fafbfd;}
+  .cfg-row .lnk{font-size:12px;color:var(--brand);cursor:pointer;flex:0 0 auto;}
+  .cfg-row .lnk:hover{text-decoration:underline;}
+  .cfg-thumb{width:72px;height:49.3px;flex:0 0 72px;border-radius:3px;background:#f2f5f9 no-repeat;
+    border:1px solid var(--line);}
+
+  /* ===== 图片裁切（上传后框选主体） ===== */
+  .cropper{position:fixed;inset:0;background:rgba(16,26,42,.45);display:none;
+    align-items:center;justify-content:center;z-index:900;}
+  .cropper.on{display:flex;}
+  .cropper-box{background:#fff;border-radius:8px;box-shadow:0 12px 40px rgba(16,32,56,.28);overflow:hidden;}
+  .cropper-hd{height:46px;display:flex;align-items:center;gap:8px;padding:0 16px;
+    font-size:14px;font-weight:600;border-bottom:1px solid var(--line2);}
+  .cropper-hd .x{margin-left:auto;color:var(--text3);cursor:pointer;font-size:18px;
+    line-height:1;font-weight:400;}
+  .cropper-hd .x:hover{color:var(--text);}
+  .cropper-bd{display:flex;gap:18px;padding:16px;}
+  .crop-stage{position:relative;background:#0f172a;border-radius:4px;overflow:hidden;flex:0 0 auto;}
+  .crop-stage img{display:block;max-width:400px;max-height:350px;user-select:none;-webkit-user-drag:none;}
+  .crop-mask{position:absolute;box-shadow:0 0 0 9999px rgba(9,16,28,.55);cursor:move;
+    outline:1px solid rgba(255,255,255,.9);}
+  .crop-mask i{position:absolute;width:12px;height:12px;border:2px solid #fff;}
+  .crop-mask i.tl{left:-1px;top:-1px;border-right:0;border-bottom:0;}
+  .crop-mask i.tr{right:-1px;top:-1px;border-left:0;border-bottom:0;}
+  .crop-mask i.bl{left:-1px;bottom:-1px;border-right:0;border-top:0;}
+  .crop-mask i.br{right:-1px;bottom:-1px;border-left:0;border-top:0;}
+  .crop-mask .rs{position:absolute;right:-5px;bottom:-5px;width:12px;height:12px;
+    border-right:2px solid #fff;border-bottom:2px solid #fff;cursor:nwse-resize;}
+  .crop-side{flex:0 0 auto;}
+  .crop-side .lb{font-size:11.5px;color:var(--text3);margin-bottom:6px;}
+  .crop-pv{width:216px;height:148px;border-radius:4px;border:1px solid var(--line);
+    background:#f2f5f9 no-repeat;}
+  .cropper-ft{display:flex;justify-content:flex-end;gap:8px;padding:0 16px 14px;}
 
   /* 字段 */
   .fld-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));column-gap:24px;}
@@ -251,6 +299,29 @@
   </div>
 </div>
 
+<div class="cropper" id="cropper">
+  <div class="cropper-box">
+    <div class="cropper-hd">裁切图片<span class="x" id="cropClose">×</span></div>
+    <div class="cropper-bd">
+      <div class="crop-stage" id="cropStage">
+        <img id="cropImg" alt="">
+        <div class="crop-mask" id="cropBox">
+          <i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i>
+          <span class="rs" id="cropRs"></span>
+        </div>
+      </div>
+      <div class="crop-side">
+        <div class="lb">展示效果</div>
+        <div class="crop-pv" id="cropPv"></div>
+      </div>
+    </div>
+    <div class="cropper-ft">
+      <button class="btn" id="cropCancel">取消</button>
+      <button class="btn btn-primary" id="cropOk">确定</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 <input type="file" id="picker" accept=".pdf,.jpg,.jpeg,.png" hidden>
 
@@ -296,8 +367,16 @@ renderNav();
 const LAND_MODULES = [
   {id:'banner', name:'首图', fields:[]},
   {id:'goods',  name:'商品信息', fields:['监制主体','赋码主体','生产主体','产品名称','产地','销售日期','订单客商']},
+  {id:'base',   name:'基地概况', groups:[
+    {name:'基地展示', src:'主数据基地信息', items:['背景图','基地名称','基地地址']},
+    {name:'取水展示', src:'主数据基地信息', items:['背景图','基地名称','固定文案']}
+  ]},
   {id:'cert',   name:'认证报告', fields:['执行标准','检测报告']},
-  {id:'farm',   name:'养殖过程', fields:['投苗入仓','投喂记录','养护记录','移池记录','捕捞出仓']},
+  {id:'farm',   name:'养殖过程', fields:['鱼苗孵化','成鱼培育','投苗入仓','投喂记录','养护记录','移池记录','捕捞出仓'],
+                cfg:{'鱼苗孵化':[
+                  {n:'背景图',   type:'img',  k:'孵化背景图'},
+                  {n:'孵化地点', type:'text', ph:'请输入孵化地点'}
+                ]}},
   {id:'market', name:'正式上市', fields:['感官指标','理化指标','客服电话'], editable:true}
 ];
 
@@ -318,7 +397,7 @@ const TABS = [
   {id:'qf-audit',      name:'千发·稽核'}
 ];
 const cur = {t:'land-consumer'};
-const openSet = {goods:true};   // 展开的模块（折叠后开关更少更清爽）
+const collapsedSet = {};   // 默认全部展开，仅记录被手动折叠的模块
 
 /* 正式上市文案（两套模板的指标一致，客服电话不同） */
 const SENSE_TXT = '体态匀称、无畸形，鳞片完整紧密、不易脱落，外观无损伤，体背暗灰黑色；无土腥味及任何异味；游动活泼有力、平衡稳定，对水流/触碰刺激反应敏感、挣扎有力，鳃盖开合均匀有力。';
@@ -348,6 +427,17 @@ function tpl(){ return cur.t.indexOf('qf') === 0 ? 'qf' : 'land'; }
 
 function mods(){ return tpl() === 'qf' ? QF_MODULES : LAND_MODULES; }
 
+/* 模块的可配置项：普通模块取 fields，分组模块（基地概况）按「组名·项名」展开 */
+function fieldsOf(m){
+  if(m.fields) return m.fields;
+  if(m.groups){
+    let out = [];
+    m.groups.forEach(g=>g.items.forEach(it=>out.push(g.name + '·' + it)));
+    return out;
+  }
+  return [];
+}
+
 function defaultState(){
   const m = mods(), t = tpl();
   const s = {
@@ -356,12 +446,14 @@ function defaultState(){
     fldOn: {},
     fieldOrder: {},
     text: Object.assign({}, TEXT_BY_TPL[t]),
-    file: Object.assign({}, FILE_BY_TPL[t])
+    file: Object.assign({}, FILE_BY_TPL[t]),
+    img: {},
+    crop: {}
   };
   m.forEach(x=>{
     s.on[x.id] = true;
-    s.fieldOrder[x.id] = x.fields.slice();
-    x.fields.forEach(f=>{ s.fldOn[x.id+'|'+f] = true; });
+    s.fieldOrder[x.id] = fieldsOf(x).slice();
+    fieldsOf(x).forEach(f=>{ s.fldOn[x.id+'|'+f] = true; });
   });
   return s;
 }
@@ -370,6 +462,15 @@ function applyState(s){
   state.order = s.order; state.on = s.on; state.fldOn = s.fldOn;
   state.fieldOrder = s.fieldOrder || {};
   state.text = s.text; state.file = s.file;
+  state.img = s.img || {}; state.crop = s.crop || {};
+}
+
+/* 缩略图/预览的裁切样式：crop 存的是相对原图的归一化区域 */
+function cropCss(k, TW, TH){
+  const cr = state.crop[k], url = state.img[k];
+  if(!cr || !url) return '';
+  return `background-image:url('${url}');background-size:${TW/cr.w}px auto;` +
+    `background-position:${-(cr.x/cr.w)*TW}px ${-(cr.y/cr.h)*TH}px;`;
 }
 
 /* 按配置顺序取字段（新增/缺失的字段自动补齐） */
@@ -411,9 +512,23 @@ function render(){
   }
   document.getElementById('mods').innerHTML = state.order.map((id, i)=>{
     const m = mods().find(x=>x.id === id);
+    const flds = fieldsOf(m);
     let body;
-    if(!m.fields.length){
+    if(!flds.length){
       body = ``;
+    } else if(m.groups){
+      body = `<div class="mod-bd">` + m.groups.map(g=>{
+        return `<div class="grp"><div class="grp-hd">${g.name}` +
+          (g.src ? `<em class="src2">${g.src}</em>` : '') + `</div>` +
+          g.items.map(it=>{
+            const key = m.id + '|' + g.name + '·' + it;
+            const on = state.fldOn[key] ? ' on' : '';
+            return `<div class="rep-row">
+              <span class="cb${on}" data-fk="${key}"></span>
+              <span class="fn">${it}</span>
+            </div>`;
+          }).join('') + `</div>`;
+      }).join('') + `</div>`;
     } else if(m.id === 'cert'){
       body = `<div class="mod-bd">` + m.fields.map(f=>{
         const key = m.id + '|' + f;
@@ -437,12 +552,32 @@ function render(){
     } else if(m.id === 'farm'){
       body = `<div class="mod-bd"><div class="fld-list">` + orderedFields(m).map((f,i)=>{
         const key = m.id + '|' + f;
+        const on = state.fldOn[key];
+        const cfg = (m.cfg && m.cfg[f]) ? m.cfg[f].map(c=>{
+          const off = on ? '' : ' off';
+          if(c.type === 'text'){
+            return `<div class="cfg-row${off}" data-own="${key}">
+              <span class="cfg-lb">${c.n}</span>
+              <div class="cfg-ctl"><input class="input" data-tk="${c.n}" placeholder="${c.ph || ''}" value="${escAttr(state.text[c.n] || '')}"></div>
+            </div>`;
+          }
+          const fn = state.file[c.k];
+          const thumb = state.img[c.k]
+            ? `<span class="cfg-thumb" style="${cropCss(c.k, 72, 49.3)}"></span>` : '';
+          return `<div class="cfg-row${off}" data-own="${key}">
+            <span class="cfg-lb">${c.n}</span>
+            <div class="cfg-ctl">${thumb}
+              <span class="filechip${fn ? '' : ' none'}" data-file="${c.k}">${fn ? esc(fn) : '未上传'}</span>
+              <span class="lnk" data-up="${c.k}">${fn ? '更换' : '上传'}</span>
+            </div>
+          </div>`;
+        }).join('') : '';
         return `<div class="fld-row" data-fid="${f}">
           <span class="fgrip" draggable="true" title="拖动调整顺序">${GRIP}</span>
           <span class="fno">${String(i+1).padStart(2,'0')}</span>
-          <span class="cb${state.fldOn[key]?' on':''}" data-fk="${key}"></span>
+          <span class="cb${on?' on':''}" data-fk="${key}"></span>
           <span class="fn">${f}</span>
-        </div>`;
+        </div>` + cfg;
       }).join('') + `</div></div>`;
     } else if(m.editable){
       body = `<div class="mod-bd">` + m.fields.map(f=>{
@@ -460,9 +595,9 @@ function render(){
       body = `<div class="mod-bd"><div class="fld-grid">` +
         m.fields.map(f=>fldRow(m.id, f)).join('') + `</div></div>`;
     }
-    const shown = m.fields.filter(f=>state.fldOn[m.id+'|'+f]).length;
-    const sum = m.fields.length ? `展示 ${shown}/${m.fields.length}` : '';
-    const open = !!openSet[m.id];
+    const shown = flds.filter(f=>state.fldOn[m.id+'|'+f]).length;
+    const sum = flds.length ? `展示 ${shown}/${flds.length}` : '';
+    const open = !collapsedSet[m.id];
     const fixed = m.id === 'banner';
     const grip = fixed
       ? '<span class="grip ghost" title="固定在顶部，不可调整顺序"></span>'
@@ -504,11 +639,17 @@ box.addEventListener('click', e=>{
     const mod = fs.closest('.mod');
     const m = mods().find(x=>x.id === mod.dataset.id);
     if(m){
-      const shown = m.fields.filter(f=>state.fldOn[m.id+'|'+f]).length;
+      const flds = fieldsOf(m);
+      const shown = flds.filter(f=>state.fldOn[m.id+'|'+f]).length;
       const sum = mod.querySelector('.sum');
-      if(sum) sum.textContent = `展示 ${shown}/${m.fields.length}`;
+      if(sum) sum.textContent = `展示 ${shown}/${flds.length}`;
     }
-    const ctl = fs.closest('.fld') && fs.closest('.fld').parentNode.querySelector('.input');
+    mod.querySelectorAll('.cfg-row[data-own]').forEach(r=>{
+      r.classList.toggle('off', !state.fldOn[r.dataset.own]);
+    });
+    const row = fs.closest('.rep-row, .fld');
+    let ctl = row && row.querySelector('.input, textarea');
+    if(!ctl && row) ctl = row.parentNode.querySelector('.input, textarea');
     if(ctl) ctl.classList.toggle('dim', !state.fldOn[k]);
     return;
   }
@@ -524,8 +665,8 @@ box.addEventListener('click', e=>{
   if(hd && !hd.classList.contains('plain') && !e.target.closest('.grip')){
     const mod = hd.closest('.mod');
     const id = mod.dataset.id;
-    openSet[id] = !openSet[id];
-    mod.classList.toggle('collapsed', !openSet[id]);
+    collapsedSet[id] = !collapsedSet[id];
+    mod.classList.toggle('collapsed', !!collapsedSet[id]);
   }
 });
 
@@ -537,20 +678,127 @@ box.addEventListener('input', e=>{
 /* 上传更换 */
 const picker = document.getElementById('picker');
 let pendingField = '';
+
+/* 需要裁切的图片项（按 4:3 框选主体），其余类型仍按普通文件处理 */
+const IMG_KEYS = ['孵化背景图'];
+
 picker.addEventListener('change', ()=>{
   const f = picker.files && picker.files[0];
   if(!f || !pendingField) return;
+  if(IMG_KEYS.indexOf(pendingField) > -1 && /^image\//.test(f.type)){
+    openCropper(URL.createObjectURL(f), pendingField, f.name);
+    return;
+  }
   state.file[pendingField] = f.name;
   const lnk = box.querySelector('.lnk[data-up="' + pendingField + '"]');
   if(lnk){
-    const nm = lnk.parentNode.querySelector('.fname');
-    nm.textContent = f.name;
-    nm.classList.remove('none');
+    const nm = lnk.parentNode.querySelector('.filechip, .fname');
+    if(nm){
+      nm.textContent = f.name;
+      nm.classList.remove('none');
+    }
     lnk.textContent = '更换';
   }
   toast('已上传 ' + f.name);
   pendingField = '';
 });
+
+/* ================= 图片裁切：框选主体，固定展示框 ================= */
+const CROP_R = 1.46;   // 与消费者端卡片图框实测一致（992×678 / 999×687）
+const cropper = document.getElementById('cropper');
+const cropStage = document.getElementById('cropStage');
+const cropImg = document.getElementById('cropImg');
+const cropBoxEl = document.getElementById('cropBox');
+const cropPv = document.getElementById('cropPv');
+const cs = {dw:0, dh:0, x:0, y:0, w:0, h:0, key:'', name:'', url:''};
+
+function openCropper(url, key, name){
+  cs.url = url; cs.key = key; cs.name = name;
+  cropper.classList.add('on');
+  cropImg.src = url;
+}
+
+function drawCrop(){
+  cropBoxEl.style.left = cs.x + 'px';
+  cropBoxEl.style.top = cs.y + 'px';
+  cropBoxEl.style.width = cs.w + 'px';
+  cropBoxEl.style.height = cs.h + 'px';
+  const TW = cropPv.clientWidth, TH = cropPv.clientHeight;
+  const s = TW / cs.w;                        // 展示框 / 裁切框
+  cropPv.style.backgroundImage = `url("${cs.url}")`;
+  cropPv.style.backgroundSize = (cs.dw * s) + 'px auto';
+  cropPv.style.backgroundPosition = `${-cs.x * s}px ${-cs.y * s}px`;
+}
+
+cropImg.addEventListener('load', ()=>{
+  const dw = cropImg.clientWidth, dh = cropImg.clientHeight;
+  cs.dw = dw; cs.dh = dh;
+  cropStage.style.width = dw + 'px';
+  cropStage.style.height = dh + 'px';
+  let h = dh * 0.8, w = h * CROP_R;
+  if(w > dw * 0.9){ w = dw * 0.9; h = w / CROP_R; }
+  cs.w = w; cs.h = h;
+  cs.x = (dw - w) / 2; cs.y = (dh - h) / 2;
+  drawCrop();
+});
+
+/* 拖动裁切框 */
+cropBoxEl.addEventListener('pointerdown', e=>{
+  if(e.target.classList.contains('rs')) return;
+  e.preventDefault();
+  const sx = e.clientX, sy = e.clientY, ox = cs.x, oy = cs.y;
+  cropBoxEl.setPointerCapture(e.pointerId);
+  const mv = ev=>{
+    cs.x = Math.max(0, Math.min(cs.dw - cs.w, ox + ev.clientX - sx));
+    cs.y = Math.max(0, Math.min(cs.dh - cs.h, oy + ev.clientY - sy));
+    drawCrop();
+  };
+  const up = ()=>{
+    document.removeEventListener('pointermove', mv);
+    document.removeEventListener('pointerup', up);
+  };
+  document.addEventListener('pointermove', mv);
+  document.addEventListener('pointerup', up);
+});
+
+/* 拉伸裁切框（保持 4:3） */
+document.getElementById('cropRs').addEventListener('pointerdown', e=>{
+  e.preventDefault(); e.stopPropagation();
+  const el = e.target, sx = e.clientX, ow = cs.w;
+  el.setPointerCapture(e.pointerId);
+  const mv = ev=>{
+    let w = ow + (ev.clientX - sx);
+    w = Math.max(120, Math.min(cs.dw - cs.x, w));
+    cs.w = w; cs.h = w / CROP_R;
+    if(cs.y + cs.h > cs.dh) cs.y = cs.dh - cs.h;
+    drawCrop();
+  };
+  const up = ()=>{
+    document.removeEventListener('pointermove', mv);
+    document.removeEventListener('pointerup', up);
+  };
+  document.addEventListener('pointermove', mv);
+  document.addEventListener('pointerup', up);
+});
+
+function closeCropper(){
+  cropper.classList.remove('on');
+  cropImg.removeAttribute('src');
+  pendingField = '';
+}
+document.getElementById('cropClose').onclick = closeCropper;
+document.getElementById('cropCancel').onclick = closeCropper;
+document.getElementById('cropOk').onclick = ()=>{
+  state.file[cs.key] = cs.name;
+  state.img[cs.key] = cs.url;
+  state.crop[cs.key] = {x:cs.x/cs.dw, y:cs.y/cs.dh, w:cs.w/cs.dw, h:cs.h/cs.dh};
+  cropper.classList.remove('on');
+  cropImg.removeAttribute('src');
+  const nm = cs.name;
+  pendingField = '';
+  render();
+  toast('已上传 ' + nm);
+};
 
 /* 拖动排序：模块整体 / 养殖过程内的环节 */
 let dragEl = null, dragFld = null;
@@ -661,7 +909,8 @@ function snapshot(){
   const fo = {};
   Object.keys(state.fieldOrder).forEach(k=>{ fo[k] = state.fieldOrder[k].slice(); });
   return {order:[...state.order], on:{...state.on}, fldOn:{...state.fldOn},
-    text:{...state.text}, file:{...state.file}, fieldOrder: fo};
+    text:{...state.text}, file:{...state.file}, img:{...state.img}, crop:{...state.crop},
+    fieldOrder: fo};
 }
 document.getElementById('tabs').addEventListener('click', e=>{
   const tm = e.target.closest('[data-t]');
